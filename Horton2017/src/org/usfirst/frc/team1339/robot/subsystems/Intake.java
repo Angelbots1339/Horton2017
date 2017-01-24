@@ -1,20 +1,20 @@
 package org.usfirst.frc.team1339.robot.subsystems;
 
-import org.usfirst.frc.team1339.base.SubsystemBase;
-import org.usfirst.frc.team1339.commands.DriveIntake;
-import org.usfirst.frc.team1339.utils.Constants;
+import org.usfirst.frc.team1339.robot.RobotMap;
 
 import com.ctre.CANTalon;
 
-public class Intake extends SubsystemBase{
+import edu.wpi.first.wpilibj.command.Subsystem;
 
-	public static CANTalon axleMotor = new CANTalon(Constants.kAxleMotor);
+public class Intake extends Subsystem{
+
+	public static CANTalon axleMotor = new CANTalon(RobotMap.kAxleMotor);
 	
 	public Intake(){
 	}
 	
 	public void initDefaultCommand() {
-		setDefaultCommand(new DriveIntake());
+		//setDefaultCommand(new DriveIntake());
 	}
 	
 	public void intake(double speed) {

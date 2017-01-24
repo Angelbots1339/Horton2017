@@ -2,11 +2,7 @@ package org.usfirst.frc.team1339.robot.subsystems;
 
 import java.util.ArrayList;
 
-import org.usfirst.frc.team1339.base.SubsystemBase;
-import org.usfirst.frc.team1339.commands.ArcadeDrive;
-import org.usfirst.frc.team1339.robot.Robot;
 import org.usfirst.frc.team1339.robot.RobotMap;
-import org.usfirst.frc.team1339.utils.Constants;
 import org.usfirst.frc.team1339.utils.MotionProfile;
 import org.usfirst.frc.team1339.utils.SplineProfile;
 import org.usfirst.frc.team1339.utils.SynchronousPID;
@@ -53,11 +49,11 @@ public class Chassis extends Subsystem{
 			RobotMap.chassisMPKa, RobotMap.chassisMPKv);
 	
 	//Encoders
-	public Encoder kRightDriveEncoder = new Encoder(
+	public Encoder rightEncoder = new Encoder(
 			RobotMap.kRightDriveAEncoder , RobotMap.kRightDriveBEncoder, true);
-	public Encoder kLeftDriveEncoder = new Encoder(
+	public Encoder leftEncoder = new Encoder(
 			RobotMap.kLeftDriveAEncoder , RobotMap.kLeftDriveBEncoder);
-	public ADXRS450_Gyro kSpartanGyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+	public ADXRS450_Gyro spartanGyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	
 	double leftLastSpeed, rightLastSpeed;
 	double rightSpeed, leftSpeed;
@@ -127,9 +123,9 @@ public class Chassis extends Subsystem{
     }
     
     public void PIDDriveEncoder(){
-    	double rightSpeed = RightDriveEncoderPID.calculate(kRightDriveEncoder.getRightDriveEnc());
-    	double leftSpeed = .LeftDriveEncoderPID.calculate(.getLeftDriveEnc());
-    	double gyroOutput = .GyroPID.calculate(.kSpartanGyro.getAngle());
+    	double rightSpeed = RightDriveEncoderPID.calculate(rightEncoder.get());
+    	double leftSpeed = LeftDriveEncoderPID.calculate(leftEncoder.get());
+    	double gyroOutput = GyroPID.calculate(spartanGyro.getAngle());
     	rightSpeed -= gyroOutput;
     	leftSpeed += gyroOutput;
     	rightSpeed *= 0.5;
@@ -152,11 +148,10 @@ public class Chassis extends Subsystem{
     }
     
     public void motionProfile(){
-    	.ChassisMP.calculate(.getRightDriveEnc(), 
-    			.getLeftDriveEnc());
-    	double gyroOutput = .GyroPID.calculate(.kSpartanGyro.getAngle());
-    	double rightSpeed = .ChassisMP.getRightOutput();
-    	double leftSpeed = .ChassisMP.getLeftOutput();
+    	ChassisMP.calculate(rightEncoder.get(), leftEncoder.get());
+    	double gyroOutput = GyroPID.calculate(spartanGyro.getAngle());
+    	double rightSpeed = ChassisMP.getRightOutput();
+    	double leftSpeed = ChassisMP.getLeftOutput();
     	rightSpeed -= gyroOutput;
     	leftSpeed += gyroOutput;
     	//System.out.println(speed);
@@ -165,7 +160,7 @@ public class Chassis extends Subsystem{
     }
     
     public void splineProfile(){
-    	chassisSP.calculate(.getLeftDriveEnc(), .getRightDriveEnc());
+    	chassisSP.calculate(leftEncoder.get(), rightEncoder.get());
     	double leftSpeed = chassisSP.getLeftOutput() * 0.5;
     	double rightSpeed = chassisSP.getRightOutput() * 0.5;
     	//.GyroPID.setSetpoint(Robot.chassis.chassisSP.getAngle());
@@ -178,11 +173,11 @@ public class Chassis extends Subsystem{
     }
     
     public void calculate(){
-    	double rightEncSpeed = .getRightDriveEncSpeed();
+    	double rightEncSpeed = rightEncoder.getRate();
     	double rightSpeed = rightEncSpeed - lastRightSpeed;
     	lastRightSpeed = rightEncSpeed;
     	
-    	double leftEncSpeed = .getLeftDriveEncSpeed();
+    	double leftEncSpeed = leftEncoder.getRate();
     	double leftSpeed = leftEncSpeed - lastLeftSpeed;
     	lastLeftSpeed = leftEncSpeed;
 
@@ -203,7 +198,7 @@ public class Chassis extends Subsystem{
     }
     
     public void gyroPID(){
-    	double speed = .GyroPID.calculate(.kSpartanGyro.getAngle()) * 4;
+    	double speed = GyroPID.calculate(spartanGyro.getAngle()) * 4;
     	double leftSpeed = -speed;
     	double rightSpeed = speed;
     	setMotorValues(leftSpeed, rightSpeed);
