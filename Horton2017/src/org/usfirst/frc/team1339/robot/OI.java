@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1339.robot;
 
+import org.usfirst.frc.team1339.robot.commands.SplineTest;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
@@ -22,6 +24,10 @@ public class OI {
 	private JoystickButton leftStickButton = new JoystickButton(xboxStick , RobotMap.xboxLeftStickButton);
 	private JoystickButton rightStickButton = new JoystickButton(xboxStick , RobotMap.xboxRightStickButton);
 	
+	
+	public OI(){
+		 XButton.whenPressed(new SplineTest(1500, 90, true));
+	}
 	
 	//Joystick get methods
 	public Joystick getXboxStick(){

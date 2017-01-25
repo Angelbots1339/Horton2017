@@ -1,7 +1,7 @@
 package org.usfirst.frc.team1339.utils;
 
-import org.usfirst.frc.team1339.robot.Robot;
 import org.usfirst.frc.team1339.robot.RobotMap;
+import org.usfirst.frc.team1339.robot.commands.CommandBase;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -200,7 +200,7 @@ public class SplineProfile {
 			}
 		}
 		
-		double currentAngle = Math.abs(Robot.oi.kSpartanGyro.getAngle() - this.startGyroAngle);
+		double currentAngle = Math.abs(CommandBase.chassis.spartanGyro.getAngle() - this.startGyroAngle);
 		if(this.splineBackwards){
 			currentAngle *= -1;
 		}

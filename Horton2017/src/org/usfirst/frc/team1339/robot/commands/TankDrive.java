@@ -1,8 +1,6 @@
 package org.usfirst.frc.team1339.robot.commands;
 
-import org.usfirst.frc.team1339.base.CommandBase;
-import org.usfirst.frc.team1339.robot.Robot;
-import org.usfirst.frc.team1339.utils.Constants;
+import org.usfirst.frc.team1339.robot.RobotMap;
 
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -12,8 +10,7 @@ public class TankDrive extends CommandBase{
 	Joystick stick;
 	
 	public TankDrive(){
-		requires(Robot.chassis);
-		setRunSpeed(0.05);
+		requires(chassis);
 	}
 	
 	protected void initialize(){
@@ -22,10 +19,10 @@ public class TankDrive extends CommandBase{
 	
 	public void execute(){
 		stick = oi.getXboxStick();
-		left = stick.getRawAxis(Constants.xboxLeftYAxis);
-		right = stick.getRawAxis(Constants.xboxRightYAxis);
+		left = stick.getRawAxis(RobotMap.xboxLeftYAxis);
+		right = stick.getRawAxis(RobotMap.xboxRightYAxis);
 		
-		Robot.chassis.tankDrive(left, right);
+		chassis.tankDrive(left, right);
 	}
 	
 	public boolean isFinished(){

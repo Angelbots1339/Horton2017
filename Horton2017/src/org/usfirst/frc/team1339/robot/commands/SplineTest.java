@@ -1,8 +1,5 @@
 package org.usfirst.frc.team1339.robot.commands;
 
-import org.usfirst.frc.team1339.base.CommandBase;
-import org.usfirst.frc.team1339.robot.Robot;
-
 public class SplineTest extends CommandBase{
 
 	double m_radius, m_angle;
@@ -10,45 +7,45 @@ public class SplineTest extends CommandBase{
 	
 	public SplineTest(double radius, double angle, boolean direction) {
 		// TODO Auto-generated constructor stub
-		requires(Robot.chassis);
+		requires(chassis);
 		m_radius = radius;
 		m_angle = Math.toRadians(angle);
 		m_direction = direction;
 	}
 
 	@Override
-	protected void init() {
+	protected void initialize() {
 		// TODO Auto-generated method stub\
 		//oi.GyroPID.setSetpoint(Math.toDegrees(m_angle));
-		Robot.chassis.chassisSP.configureSplineProfile(m_radius, m_angle, m_direction);
-		Robot.chassis.chassisSP.initializeProfile(oi.getLeftDriveEnc(), oi.getRightDriveEnc(),
-				oi.kSpartanGyro.getAngle());
+		chassis.chassisSP.configureSplineProfile(m_radius, m_angle, m_direction);
+		chassis.chassisSP.initializeProfile(chassis.leftEncoder.get(), chassis.rightEncoder.get(),
+				chassis.spartanGyro.getAngle());
 	}
 
 	@Override
 	public void execute() {
 		// TODO Auto-generated method stub
-		if(!Robot.chassis.chassisSP.isFinishedTrajectory()){
-			Robot.chassis.splineProfile();
+		if(!chassis.chassisSP.isFinishedTrajectory()){
+			chassis.splineProfile();
 		}
 	}
 
 	@Override
 	public boolean isFinished() {
 		// TODO Auto-generated method stub
-		return Robot.chassis.chassisSP.isFinishedTrajectory();
+		return chassis.chassisSP.isFinishedTrajectory();
 	}
 
 	@Override
 	protected void end() {
 		// TODO Auto-generated method stub
-		Robot.chassis.gyroPID();
+		chassis.gyroPID();
 	}
 
 	@Override
 	protected void interrupted() {
 		// TODO Auto-generated method stub
-		Robot.chassis.setMotorValues(0, 0);
+		chassis.setMotorValues(0, 0);
 	}
 
 }
