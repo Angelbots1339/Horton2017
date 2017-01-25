@@ -1,7 +1,5 @@
 package org.usfirst.frc.team1339.robot.commands;
 
-import org.usfirst.frc.team1339.robot.Robot;
-
 public class DriveIntake extends CommandBase {
 	
 	private double speed = 0;

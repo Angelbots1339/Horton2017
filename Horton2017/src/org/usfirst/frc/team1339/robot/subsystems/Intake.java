@@ -1,6 +1,7 @@
 package org.usfirst.frc.team1339.robot.subsystems;
 
 import org.usfirst.frc.team1339.robot.RobotMap;
+import org.usfirst.frc.team1339.robot.commands.DriveIntake;
 
 import com.ctre.CANTalon;
 
@@ -14,7 +15,7 @@ public class Intake extends Subsystem{
 	}
 	
 	public void initDefaultCommand() {
-		//setDefaultCommand(new DriveIntake());
+		setDefaultCommand(new DriveIntake());
 	}
 	
 	public void intake(double speed) {

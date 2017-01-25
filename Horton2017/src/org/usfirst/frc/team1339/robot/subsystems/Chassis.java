@@ -3,6 +3,7 @@ package org.usfirst.frc.team1339.robot.subsystems;
 import java.util.ArrayList;
 
 import org.usfirst.frc.team1339.robot.RobotMap;
+import org.usfirst.frc.team1339.robot.commands.ArcadeDrive;
 import org.usfirst.frc.team1339.utils.MotionProfile;
 import org.usfirst.frc.team1339.utils.SplineProfile;
 import org.usfirst.frc.team1339.utils.SynchronousPID;
@@ -67,7 +68,14 @@ public class Chassis extends Subsystem{
 	}
 	
 	public void initDefaultCommand(){
-		//setDefaultCommand(new ArcadeDrive());
+		setDefaultCommand(new ArcadeDrive());
+	}
+	
+	public void runVisionPid(int centerX){
+		double output = TurnGyroPID.calculate(centerX);
+		double left = output;
+		double right = -output;
+		setMotorValues(left, right);
 	}
 	
 	public void driveWithJoystick(double throttle, double turn){
