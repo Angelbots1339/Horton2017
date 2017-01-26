@@ -28,6 +28,7 @@ public class Chassis extends Subsystem{
 	public static CANTalon rightMotorOne = new CANTalon(RobotMap.kRightMotorOne);
 	public static CANTalon rightMotorTwo = new CANTalon(RobotMap.kRightMotorTwo);
 	
+	public SynchronousPID visionPID = new SynchronousPID(0.005, 0, 0);
 	public SynchronousPID LeftDriveEncoderPID = new SynchronousPID(
 			RobotMap.kDriveKp , RobotMap.kDriveKi , RobotMap.kDriveKd);
 	public SynchronousPID ShortLeftDriveEncoderPID = new SynchronousPID(
@@ -72,7 +73,8 @@ public class Chassis extends Subsystem{
 	}
 	
 	public void runVisionPid(int centerX){
-		double output = TurnGyroPID.calculate(centerX);
+		double output = visionPID.calculate(centerX);
+		output *= 0.25;
 		double left = output;
 		double right = -output;
 		setMotorValues(left, right);

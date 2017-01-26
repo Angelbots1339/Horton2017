@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -71,6 +72,11 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		if (autonomousCommand != null)
 			autonomousCommand.cancel();
+		CommandBase.chassis.spartanGyro.reset();
+		CommandBase.chassis.leftEncoder.reset();
+		CommandBase.chassis.rightEncoder.reset();
+		CommandBase.chassis.leftEncoder.setDistancePerPulse(1);
+		CommandBase.chassis.rightEncoder.setDistancePerPulse(1);
 	}
 
 	/**
@@ -79,6 +85,9 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
+		SmartDashboard.putNumber("left drive encoder", CommandBase.chassis.leftEncoder.get());
+		SmartDashboard.putNumber("right drive encoder", CommandBase.chassis.rightEncoder.get());
+		SmartDashboard.putNumber("Gyro",  CommandBase.chassis.spartanGyro.getAngle());
 	}
 
 	/**

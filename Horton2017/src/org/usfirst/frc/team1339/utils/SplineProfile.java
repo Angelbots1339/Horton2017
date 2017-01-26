@@ -301,6 +301,6 @@ public class SplineProfile {
 	}
 	
 	public boolean isFinishedTrajectory() {
-        return trajectoryFinished;
+        return getState() == MotionState.END;
     }
 }

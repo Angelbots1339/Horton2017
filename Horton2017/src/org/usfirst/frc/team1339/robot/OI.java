@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1339.robot;
 
+import org.usfirst.frc.team1339.robot.commandgroups.ChainingSpline;
 import org.usfirst.frc.team1339.robot.commands.RunVision;
 import org.usfirst.frc.team1339.robot.commands.SplineTest;
 
@@ -27,8 +28,9 @@ public class OI {
 	
 	
 	public OI(){
-		 XButton.whenPressed(new SplineTest(1500, 90, true));
-		 AButton.whileHeld(new RunVision());
+		 //XButton.whenPressed(new SplineTest(1500, 90, true));
+		XButton.whenPressed(new ChainingSpline());
+		AButton.whileHeld(new RunVision());
 	}
 	
 	//Joystick get methods

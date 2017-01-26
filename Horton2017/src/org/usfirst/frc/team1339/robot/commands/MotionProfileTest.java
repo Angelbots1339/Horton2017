@@ -2,19 +2,20 @@ package org.usfirst.frc.team1339.robot.commands;
 
 public class MotionProfileTest extends CommandBase {
 	
-	private double m_goal, tolerance, initialLeft, initialRight;
+	private double m_goal, tolerance, initialLeft, initialRight, m_decelerateVel;
 	private int counter;
 	
-	public MotionProfileTest(double goal, double input_tolerance){
+	public MotionProfileTest(double goal, double input_tolerance, double decelerateVel){
 		requires(chassis);
 		m_goal = goal;
 		tolerance = input_tolerance;
+		m_decelerateVel = decelerateVel;
 	}
 
 	protected void initialize() {
 		// TODO Auto-generated method stub
 		chassis.GyroPID.setSetpoint(chassis.spartanGyro.getAngle());
-		chassis.ChassisMP.configureNewProfile(m_goal);
+		chassis.ChassisMP.configureNewProfile(m_goal, m_decelerateVel);
 		initialLeft = chassis.leftEncoder.get();
 		initialRight = chassis.rightEncoder.get();
 		chassis.ChassisMP.initializeProfile(initialLeft, initialRight);
@@ -32,17 +33,17 @@ public class MotionProfileTest extends CommandBase {
 
 	public boolean isFinished() {
 		// TODO Auto-generated method stub
-		return chassis.ChassisMP.isFinishedTrajectory() && counter >= 5;
+		return chassis.ChassisMP.isFinishedTrajectory() && counter >= -1;
 	}
 
 	protected void end() {
 		// TODO Auto-generated method stub
-		chassis.setMotorValues(0, 0);
+		//chassis.setMotorValues(0, 0);
 	}
 
 	protected void interrupted() {
 		// TODO Auto-generated method stub
-		chassis.setMotorValues(0, 0);
+		//chassis.setMotorValues(0, 0);
 	}
 
 }

@@ -19,6 +19,7 @@ public class Vision implements Runnable{
 	private Pipeline pl;
 	private int centerX;
 	private volatile Thread p;
+
 	
 	public Vision(){
 		camera = CameraServer.getInstance().addAxisCamera("10.13.39.11");
@@ -41,6 +42,11 @@ public class Vision implements Runnable{
 		Thread thisThread = Thread.currentThread();
 
 		while(p == thisThread){
+			
+			
+			
+	
+			
 			cvSink.grabFrame(source);
 			pl.setsource0(source);
 			try{

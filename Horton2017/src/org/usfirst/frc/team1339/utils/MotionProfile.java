@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1339.utils;
 
+import org.usfirst.frc.team1339.robot.Robot;
 import org.usfirst.frc.team1339.robot.RobotMap;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -11,7 +12,7 @@ public class MotionProfile {
 	private double Kp, Ki, Kd, Ka, Kv, goal, cruiseVel,
 	maxAcc, cruiseVelScaleFactor, lastRightError = 0,
 	lastLeftError = 0, rightOutput = 0, leftOutput = 0,
-	leftStartPos, rightStartPos;
+	leftStartPos, rightStartPos, decelerateVel;
 	private double lastTime;
 	public Segment initialSegment = new Segment(0, 0, 0);
 	public Segment currentSegment = new Segment(0, 0, 0);
@@ -55,7 +56,7 @@ public class MotionProfile {
 		}
 	}
 	
-	public void configureNewProfile(double distance){
+	public void configureNewProfile(double distance, double decelerateSpeed){
 		this.goal = distance;
 		this.maxAcc = RobotMap.maxAcceleration;
 		this.cruiseVelScaleFactor = RobotMap.motionProfileFastScaleFactor;
@@ -69,6 +70,7 @@ public class MotionProfile {
 		this.currentSegment = new Segment(0, 0, 0);
 		setState(MotionState.ACCELERATING);
 		lastTime = Timer.getFPGATimestamp();
+		this.decelerateVel = decelerateSpeed;
 	}
 	
 	public void configureNewProfile(double Kp, double Ki, double Kd, double Ka,
@@ -119,7 +121,7 @@ public class MotionProfile {
 		double t_to_cruise = (cruiseVel - currentVel) / maxAcc; //time to accelerate to cruise speed
 		double x_to_cruise = currentVel * t_to_cruise + .5 * maxAcc * t_to_cruise * t_to_cruise; //distance to get to cruise speed
 		
-		double t_to_zero = Math.abs(currentVel / maxAcc); //time to get to zero speed from cruise speed
+		double t_to_zero = Math.abs((currentVel -  this.decelerateVel)/ maxAcc); //time to get to zero speed from cruise speed
 		double x_to_zero = currentVel * t_to_zero - .5 * maxAcc * t_to_zero * t_to_zero; //distance to get to zero speed
 		
 		double cruiseX;
@@ -167,15 +169,14 @@ public class MotionProfile {
 		else{
 			nextSegment.pos = 0;
 			currentSegment.pos = goal;
-			nextSegment.vel = 0;
+			nextSegment.vel = this.decelerateVel;
 			nextSegment.acc = 0;
 		}
 		
 		currentSegment.pos += nextSegment.pos;
 		currentSegment.vel = nextSegment.vel;
 		currentSegment.acc = nextSegment.acc;
-		
-		System.out.println("pos" + currentSegment.pos);
+
 		//System.out.println("cruiseVel" + cruiseVel);
 		double output = Kv * currentSegment.vel + Ka * currentSegment.acc;
 		
@@ -202,8 +203,7 @@ public class MotionProfile {
 	}
 	
 	public boolean isFinishedTrajectory() {
-        return currentSegment.pos == goal
-                && currentSegment.vel == 0;
+        return currentSegment.pos == goal;
     }
 	
 	public double getGoal(){
