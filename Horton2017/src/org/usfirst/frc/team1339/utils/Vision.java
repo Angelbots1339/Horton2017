@@ -52,6 +52,9 @@ public class Vision implements Runnable{
 					synchronized (imgLock) {
 						centerX = r.x + (r.width / 2);
 					}
+				}else{
+					centerX = -1;
+					
 				}
 			}
 			catch(Exception e){
@@ -61,6 +64,7 @@ public class Vision implements Runnable{
 	}
 
 	public void stop(){
+		centerX = -1;
 		p = null;
 	}
 }
