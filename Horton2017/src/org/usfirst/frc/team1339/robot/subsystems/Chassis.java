@@ -28,7 +28,8 @@ public class Chassis extends Subsystem{
 	public static CANTalon rightMotorOne = new CANTalon(RobotMap.kRightMotorOne);
 	public static CANTalon rightMotorTwo = new CANTalon(RobotMap.kRightMotorTwo);
 	
-	public static SynchronousPID visionPID = new SynchronousPID(0.005, 0, 0);
+	public SynchronousPID visionPID = new SynchronousPID(0.005, 0, 0);
+	public SynchronousPID drivePID = new SynchronousPID(0.015, 0, 0);
 	public SynchronousPID LeftDriveEncoderPID = new SynchronousPID(
 			RobotMap.kDriveKp , RobotMap.kDriveKi , RobotMap.kDriveKd);
 	public SynchronousPID ShortLeftDriveEncoderPID = new SynchronousPID(
@@ -66,30 +67,71 @@ public class Chassis extends Subsystem{
 	private double lastTime = 0, lastRightSpeed = 0, lastLeftSpeed = 0;
 	
 	public Chassis(){
+		
 	}
 	
 	public void initDefaultCommand(){
 		setDefaultCommand(new ArcadeDrive());
 	}
 	
-	public void runVisionPid(int centerX){
-		if(centerX == -1){
+	public void runVisionPid(int[] centerX){
+		double targetSum = 0;
+		for(int i = 0; i < centerX.length; i++){
+			targetSum += centerX[i];
+		}
+		double targetAvg = targetSum/centerX.length;
+		if(centerX.length == 0){
 			setMotorValues(0, 0);
 		}
 		else{
-			double output = visionPID.calculate(centerX);
+			double output = visionPID.calculate(targetAvg);
 			double left = output;
 			double right = -output;
 			setMotorValues(left, right);
 		}
 	}
-	public void runVisionPIDThrottle(int centerX, double throttle){
+	
+	public void runVisionPIDThrottle(int[] centerX, double throttle){
 		double gyroOutput = 0;
 		double right = throttle;
 		double left = throttle;
-		if(centerX != -1){
-			gyroOutput = visionPID.calculate(centerX)*0.5;
+		double targetSum = 0;
+		for(int i = 0; i < centerX.length; i++){
+			targetSum += centerX[i];
 		}
+		double targetAvg = targetSum/centerX.length;
+		if(centerX.length != 0){
+			gyroOutput = visionPID.calculate(targetAvg)*0.25;
+		}
+		right -= gyroOutput;
+		left += gyroOutput;
+		setMotorValues(left, right);
+	}
+	
+	public void autoGear(int[] centerX, int[] heights){
+		double gyroOutput = 0;
+		double distOutput = 0;
+		double targetSum = 0;
+		
+		for(int i = 0; i < centerX.length; i++){
+			targetSum += centerX[i];
+		}
+		double targetAvg = targetSum/centerX.length;
+		if(centerX.length != 0){
+			gyroOutput = visionPID.calculate(targetAvg)*0.5;
+		}
+		
+		targetSum = 0;
+		for(int i = 0; i < heights.length; i++){
+			targetSum += heights[i];
+		}
+		targetAvg = targetSum/heights.length;
+		if(heights.length != 0){
+			distOutput = -drivePID.calculate(targetAvg)*0.5;
+		}
+
+		double right = distOutput;
+		double left = distOutput;
 		right -= gyroOutput;
 		left += gyroOutput;
 		setMotorValues(left, right);
@@ -129,7 +171,6 @@ public class Chassis extends Subsystem{
         	rightSpeed = rightLastSpeed - rate;
         else
         	rightSpeed = right;
-        
         
         setMotorValues(leftSpeed, rightSpeed);
         
@@ -179,7 +220,6 @@ public class Chassis extends Subsystem{
     	double leftSpeed = ChassisMP.getLeftOutput();
     	rightSpeed -= gyroOutput;
     	leftSpeed += gyroOutput;
-    	//System.out.println(speed);
     	SmartDashboard.putNumber("MP output", rightSpeed);
     	setMotorValues(-leftSpeed, -rightSpeed);
     }
@@ -188,11 +228,6 @@ public class Chassis extends Subsystem{
     	chassisSP.calculate(leftEncoder.get(), rightEncoder.get());
     	double leftSpeed = chassisSP.getLeftOutput() * 0.5;
     	double rightSpeed = chassisSP.getRightOutput() * 0.5;
-    	//.GyroPID.setSetpoint(Robot.chassis.chassisSP.getAngle());
-    	//double gyroOutput = .GyroPID.calculate(.kSpartanGyro.getAngle());
-    	//rightSpeed -= gyroOutput;
-    	//leftSpeed += gyroOutput;
-    	//SmartDashboard.putNumber("gyro output", gyroOutput);
     	SmartDashboard.putNumber("spline speed", -leftSpeed);
     	setMotorValues(-leftSpeed, -rightSpeed);
     }

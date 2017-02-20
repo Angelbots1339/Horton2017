@@ -1,7 +1,6 @@
 package org.usfirst.frc.team1339.robot.commandgroups;
 
-import org.usfirst.frc.team1339.robot.commands.DriveShooterTimeout;
-import org.usfirst.frc.team1339.robot.commands.DriveStraight;
+import org.usfirst.frc.team1339.robot.commands.*;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
@@ -27,7 +26,8 @@ public class CommandGroupTest extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
-    	addParallel(new DriveShooterTimeout(-0.5, 2));
-		addSequential(new DriveStraight(-.5, 2));
+    	addSequential(new AutoGear());
+    	addSequential(new Chill(1));
+    	addSequential(new DriveStraight(0.5, 1));
     }
 }

@@ -1,24 +1,19 @@
 package org.usfirst.frc.team1339.robot.commands;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.usfirst.frc.team1339.robot.RobotMap;
-
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class RunVisionThrottle extends CommandBase{
-	Joystick stick;
-	double throttle;
+public class AutoGear extends CommandBase{
 	
-	public RunVisionThrottle(){
+	public AutoGear(){
 		requires(chassis);
 	}
 	
 	protected void initialize(){
 		vision.start();
 		chassis.visionPID.setSetpoint(160);
+		chassis.drivePID.setSetpoint(115);
 	}
 	
 	public void execute(){
@@ -26,14 +21,11 @@ public class RunVisionThrottle extends CommandBase{
 		int[] heights = vision.getHeight();
 		SmartDashboard.putString("CENTERX", Arrays.toString(centerX));
 		SmartDashboard.putString("heights", Arrays.toString(heights));
-		
-		stick = oi.getXboxStick();
-		throttle = stick.getRawAxis(RobotMap.xboxLeftYAxis);
-		chassis.runVisionPIDThrottle(centerX, throttle);
+		chassis.autoGear(centerX, heights);
 	}
 	
 	public boolean isFinished(){
-		return false;
+		return chassis.drivePID.onTarget(5);
 	}
 	
 	protected void end(){

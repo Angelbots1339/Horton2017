@@ -17,14 +17,17 @@ public class Vision implements Runnable{
 	private Object imgLock = new Object();
 	private CvSink cvSink;
 	private Pipeline pl;
-	private int centerX;
+	private ArrayList<Integer> centerX;
+	private ArrayList<Integer> heights;
 	private volatile Thread p;
-	
+
 	public Vision(){
 		camera = CameraServer.getInstance().addAxisCamera("10.13.39.11");
 		camera.setResolution(640, 480);
 		cvSink = CameraServer.getInstance().getVideo();
 		pl = new Pipeline();
+		centerX = new ArrayList<Integer>();
+		heights = new ArrayList<Integer>();
 	}
 
 	public void start(){
@@ -32,29 +35,41 @@ public class Vision implements Runnable{
 		p.start();
 	}
 
-	public int getCenterX(){
-		return centerX;
+	public synchronized int[] getCenterX(){
+		int length = centerX.size();
+		int[] output = new int[length];
+		for(int x = 0; x < length; x++){
+			output[x] = centerX.get(x);
+		}
+		return output;
+	}
+
+	public synchronized int[] getHeight(){
+		int length = heights.size();
+		int[] output = new int[length];
+		for(int x = 0; x < length; x++){
+			output[x] = heights.get(x);
+		}
+		return output;
 	}
 
 	public void run() {
 		Mat source = new Mat();
 		Thread thisThread = Thread.currentThread();
-
 		while(p == thisThread){
 			cvSink.grabFrame(source);
 			pl.setsource0(source);
 			try{
 				pl.process();
 				ArrayList<MatOfPoint> output = pl.filterContoursOutput();
-				
-				if(output.size() != 0){
-					Rect r = Imgproc.boundingRect(pl.filterContoursOutput().get(0));
-					synchronized (imgLock) {
-						centerX = r.x + (r.width / 2);
+				synchronized(imgLock){
+					centerX.clear();
+					heights.clear();
+					for(int x = 0; x < output.size(); x++){
+						Rect r = Imgproc.boundingRect(pl.filterContoursOutput().get(x));
+						centerX.add(r.x + (r.width / 2));
+						heights.add(r.height);
 					}
-				}else{
-					centerX = -1;
-					
 				}
 			}
 			catch(Exception e){
@@ -64,7 +79,7 @@ public class Vision implements Runnable{
 	}
 
 	public void stop(){
-		centerX = -1;
+		centerX.clear();
 		p = null;
 	}
 }

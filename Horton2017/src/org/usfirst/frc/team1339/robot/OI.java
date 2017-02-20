@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1339.robot;
 
+import org.usfirst.frc.team1339.robot.commandgroups.CommandGroupTest;
 import org.usfirst.frc.team1339.robot.commands.RunVision;
 import org.usfirst.frc.team1339.robot.commands.RunVisionThrottle;
 import org.usfirst.frc.team1339.robot.commands.SplineTest;
@@ -31,6 +32,7 @@ public class OI {
 		 XButton.whenPressed(new SplineTest(1500, 90, true));
 		 AButton.whileHeld(new RunVision());
 		 YButton.whileHeld(new RunVisionThrottle());
+		 BButton.whenPressed(new CommandGroupTest());
 	}
 	
 	//Joystick get methods
@@ -58,6 +60,7 @@ public class OI {
 	public JoystickButton getLeftStickButton(){
 		return leftStickButton;
 	}
+	
 	public JoystickButton getRightStickButton(){
 		return rightStickButton;
 	}
